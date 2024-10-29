@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Spell Checker</h1>
+        <form id="spell-form">
+            <label for="word">Enter a word:</label>
+            <input type="text" id="word" name="word" required>
+            <button type="submit">Check Spelling</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#spell-form').submit(function(e) {
+                e.preventDefault();
+                const word = $('#word').val();
+                $.post('/check', { word: word }, function(data) {
+                    $('#result').empty();
+                    if (data.length > 0) {
+                        $('#result').append('<h3>Suggestions:</h3><ul>');
+                        data.forEach(item => {
+                            $('#result').append('<li>' + item[0] + ' (Probability: ' + item[1].toFixed(4) + ')</li>');
+                        });
+                        $('#result').append('</ul>');
+                    } else {
+                        $('#result').html('<p>No suggestions found.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
